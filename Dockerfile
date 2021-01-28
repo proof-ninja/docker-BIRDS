@@ -12,4 +12,8 @@ RUN eval $(opam env) &&\
     make release &&\
     sudo cp release/birds /usr/bin/
 
-CMD ["bash"]
+RUN sudo mkdir /birds
+
+WORKDIR /birds
+
+ENTRYPOINT ["/usr/bin/birds"]

@@ -8,12 +8,11 @@ The dockerfile for BIRDS development.
 $ docker build -t birds .
 ```
 
-### How to run benchmark
+### How to run
 
 ```bash
-$ docker run --rm -it birds /bin/bash
+$ ls
+xxx.dl
 
-$ cd benchmarks
-
-$ bash benchmark.sh
+$ docker run --rm -v $PWD:/birds birds -f xxx.dl
 ```
