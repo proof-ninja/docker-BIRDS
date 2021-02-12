@@ -16,10 +16,18 @@ ENV PG_CONF_DIR="/etc/postgresql/${PG_VERSION}/main" \
     PG_BIN_DIR="/usr/lib/postgresql/${PG_VERSION}/bin" \
     PG_DATA_DIR="${PG_HOME}/${PG_VERSION}/main"
 
-RUN apt-get update && apt-get install -y locales && locale-gen ${OS_LOCALE} \
- && dpkg-reconfigure locales && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y locales \
+ && locale-gen ${OS_LOCALE} \
+ && dpkg-reconfigure locales \
+ && rm -rf /var/lib/apt/lists/*
+
+# Fetch BIRDS from GitHub
+WORKDIR /root/
+RUN apt-get update && apt-get install -y git \
+ && git clone https://github.com/dangtv/BIRDS birds
 
 # installing postgresql
+WORKDIR /root/
 RUN apt-get update && apt-get install -y wget \
  && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
  && echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
@@ -30,11 +38,9 @@ RUN apt-get update && apt-get install -y wget \
  && update-rc.d postgresql enable \
  && apt-get purge -y --auto-remove wget \
 #  && rm /etc/apt/sources.list.d/pgdg.list \
- && rm -rf /var/lib/apt/lists/*
-
-# configuring postgresql
-COPY docker/ubuntu/config/postgresql/pg_hba.conf ${PG_CONF_DIR}
-RUN echo "listen_addresses='*'" >> ${PG_CONF_DIR}/postgresql.conf
+ && rm -rf /var/lib/apt/lists/* \
+ && cp /root/birds/docker/ubuntu/config/postgresql/pg_hba.conf ${PG_CONF_DIR} \
+ && echo "listen_addresses='*'" >> ${PG_CONF_DIR}/postgresql.conf
 
 # installing plsh
 WORKDIR /root/
@@ -68,18 +74,24 @@ RUN BUILD_PKGS="wget unzip" \
  && apt-get purge -y --auto-remove ${BUILD_PKGS} \
  && rm -rf /var/lib/apt/lists/*
 
-RUN  mkdir -p /root/.lean && mkdir -p /root/birds && mkdir -p /usr/lib/birds
-
 # installing lean libs for birds
-COPY verification /usr/lib/birds/verification
-COPY docker/ubuntu/config/lean/leanpkg.path /root/.lean/
+RUN mkdir -p /root/.lean \
+ && mkdir -p /usr/lib/birds \
+ && cp -rTp /root/birds/verification /usr/lib/birds/verification \
+ && cp /root/birds/docker/ubuntu/config/lean/leanpkg.path /root/.lean/
 WORKDIR /usr/lib/birds/verification/
 RUN BUILD_PKGS="git" \
  && RUNTIME_PKGS="" \
  && apt-get update && apt-get install -y ${BUILD_PKGS} ${RUNTIME_PKGS} \
- && leanpkg configure && cd /usr/lib/birds/verification/_target/deps/mathlib/ && leanpkg configure && leanpkg build -- --threads=1 \
- && cd /usr/lib/birds/verification/_target/deps/super/ && leanpkg configure && leanpkg build \
- && cd /usr/lib/birds/verification/ && leanpkg build \
+ && leanpkg configure \
+ && cd /usr/lib/birds/verification/_target/deps/mathlib/ \
+ && leanpkg configure \
+ && leanpkg build -- --threads=1 \
+ && cd /usr/lib/birds/verification/_target/deps/super/ \
+ && leanpkg configure \
+ && leanpkg build \
+ && cd /usr/lib/birds/verification/ \
+ && leanpkg build \
  && apt-get purge -y --auto-remove ${BUILD_PKGS} \
  && rm -rf /var/lib/apt/lists/*
 
@@ -99,7 +111,6 @@ RUN BUILD_PKGS="wget libgtk2.0" \
  && rm -rf /var/lib/apt/lists/*
 
 # installing BIRDS
-RUN git clone https://github.com/dangtv/BIRDS && mv BIRDS birds
 WORKDIR /root/birds/
 RUN BUILD_PKGS="wget build-essential git make opam m4" \
  && RUNTIME_PKGS="" \
@@ -114,6 +125,7 @@ RUN BUILD_PKGS="wget build-essential git make opam m4" \
  && mv release/birds /usr/bin/ \
  && make clean
 
+# Installing time command
 RUN apt-get update && apt-get install time -y
 
 ENTRYPOINT ["/usr/bin/birds"]
