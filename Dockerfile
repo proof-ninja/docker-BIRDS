@@ -111,7 +111,7 @@ RUN BUILD_PKGS="wget libgtk2.0" \
  && rm -rf /var/lib/apt/lists/*
 
 # installing BIRDS
-WORKDIR /root/birds/
+WORKDIR /root/
 RUN BUILD_PKGS="wget build-essential git make opam m4" \
  && RUNTIME_PKGS="" \
  && apt-get update && apt-get install -y ${BUILD_PKGS} ${RUNTIME_PKGS} \
