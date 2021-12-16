@@ -100,13 +100,13 @@ WORKDIR /root/
 RUN BUILD_PKGS="wget libgtk2.0" \
  && RUNTIME_PKGS="" \
  && apt-get update && apt-get install -y ${BUILD_PKGS} ${RUNTIME_PKGS} \
- && wget https://mirror.racket-lang.org/installers/7.6/racket-minimal-7.6-x86_64-linux.sh \
- && chmod a+x racket-minimal-7.6-x86_64-linux.sh \
- && bash racket-minimal-7.6-x86_64-linux.sh --unix-style --create-dir --dest /usr/local/racket \
+ && wget https://mirror.racket-lang.org/installers/8.1/racket-minimal-8.1-x86_64-linux.sh \
+ && chmod a+x racket-minimal-8.1-x86_64-linux.sh \
+ && bash racket-minimal-8.1-x86_64-linux.sh --unix-style --create-dir --dest /usr/local/racket \
  && ln -s /usr/local/racket/bin/racket /usr/local/bin/racket \
  && ln -s /usr/local/racket/bin/raco /usr/local/bin/raco \
  && raco pkg install --auto rosette \
- && rm racket-minimal-7.6-x86_64-linux.sh \
+ && rm racket-minimal-8.1-x86_64-linux.sh \
  && apt-get purge -y --auto-remove ${BUILD_PKGS} \
  && rm -rf /var/lib/apt/lists/*
 
