@@ -19,29 +19,15 @@ $ docker run --rm -v $PWD:/birds birds -f xxx.dl
 
 ## BIRDS を docker 上で動かす手順
 
-まず、 docker-BIRDS の dockerfile を修正する。
-
-```dockerfile
-# ENTRYPOINT ["/usr/bin/birds"]
-ENTRYPOINT ["/bin/bash"]
-```
-
-そして docker build を行う
-
-```bash
-# とんでもない時間がかかるので注意
-$ docker build -t birds .
-```
-
-その後、 BIRDS のディレクトリに移動して docker 起動時にマウント
+BIRDS のディレクトリを docker 起動時にマウント
 
 ```
 $ cd path/to/BIRDS
 
-$ docker run --rm -it -v $PWD:/birds birds
+$ docker run --rm -it -v $PWD:/birds bash
 ```
 
-BIRDS をビルドする。
+コンテナの中で BIRDS をビルドする。
 
 ```bash
 # opam の準備
