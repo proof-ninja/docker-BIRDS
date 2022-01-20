@@ -128,4 +128,4 @@ RUN BUILD_PKGS="wget build-essential git make opam m4" \
 # Installing time command
 RUN apt-get update && apt-get install time -y
 
-ENTRYPOINT ["/usr/bin/birds"]
+CMD ["/usr/bin/birds"]
