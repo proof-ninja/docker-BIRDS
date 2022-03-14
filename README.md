@@ -17,39 +17,27 @@ xxx.dl
 $ docker run --rm -v $PWD:/birds birds -f xxx.dl
 ```
 
-## BIRDS を docker 上で動かす手順
+## 手元の BIRDS コードで benchmark を実行する方法
 
-BIRDS のディレクトリを docker 起動時にマウント
-
-```
-$ cd path/to/BIRDS
-
-$ docker run --rm -it -v $PWD:/birds bash
+BIRDSのソースコードを入手
+```console
+$ git clone git@github.com:proof-ninja/BIRDS.git
+$ cd BIRDS/
 ```
 
-コンテナの中で BIRDS をビルドする。
-
-```bash
-# opam の準備
-$ opam init
-$ eval `opam config env`
-
-
-# もう入ってるはずだけど一応
-$ opam install num postgresql
-
-# ビルド
-$ make depend
-$ make all
-
-# バイナリを配置する
-$ mv bin/birds /usr/bin/
+Dockerhub から imageを pull
+```console
+$ docker pull proofninja/birds-cui:v1
 ```
 
-試しに benchmark を実行する
-
-```bash
-$ cd benchmarks/
-
-$ bash benchmark.sh
+Dockerによるbenchmarkの実行
+```console
+$ docker run --rm -it -v $PWD:/birds proofninja/birds-cui:v1 bash
+> cd /birds
+> opam init
+> eval `opam config env`
+> make all
+> make install
+> cd benchmark
+> bash benchmark.sh
 ```
